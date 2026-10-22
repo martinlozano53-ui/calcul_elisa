@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Volumes - Labo</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--primary-dark);
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 6px;
+        }
+        .modality-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .modality-info {
+            flex: 1;
+        }
+        .modality-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .modality-vol {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .modality-input-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        input[type="number"] {
+            width: 75px;
+            padding: 8px;
+            font-size: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+            background: white;
+        }
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .subtotal {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 65px;
+            text-align: right;
+        }
+        .custom-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .custom-row input {
+            flex: 1;
+        }
+        select {
+            padding: 8px;
+            font-size: 0.95rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            outline: none;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+        .btn-primary:active {
+            background-color: var(--primary-dark);
+        }
+        .btn-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 8px 10px;
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            width: 100%;
+            margin-top: 8px;
+        }
+        .results-card {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3);
+        }
+        .results-card h2 {
+            color: #e0f2fe;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 12px;
+        }
+        .main-total {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .unit-box div:first-child {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        .unit-box div:last-child {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .details-breakdown {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+    }
+    </script>
+</head>
+<body>
+
+    <h1>Calculateur Labo</h1>
+    <div class="subtitle">Gestion des volumes de réactifs (Modalités & Ajouts)</div>
+
+    <!-- Modalités -->
+    <div class="card">
+        <h2>Modalités Prédéfinies</h2>
+        
+        <div class="modality-row">
+            <div class="modality-info">
+                <div class="modality-name">Coating Bioreba</div>
+                <div class="modality-vol">150 mL / unité</div>
+            </div>
+            <div class="modality-input-container">
+                <input type="number" id="mod0" min="0" value="0" inputmode="numeric" oninput="calculate()">
+                <div class="subtotal" id="sub0">0 mL</div>
+            </div>
+        </div>
+
+        <div class="modality-row">
+            <div class="modality-info">
+                <div class="modality-name">Coating Agdia</div>
+                <div class="modality-vol">175 mL / unité</div>
+            </div>
+            <div class="modality-input-container">
+                <input type="number" id="mod1" min="0" value="0" inputmode="numeric" oninput="calculate()">
+                <div class="subtotal" id="sub1">0 mL</div>
+            </div>
+        </div>
+
+        <div class="modality-row">
+            <div class="modality-info">
+                <div class="modality-name">Conjugué Bioreba</div>
+                <div class="modality-vol">300 mL / unité</div>
+            </div>
+            <div class="modality-input-container">
+                <input type="number" id="mod2" min="0" value="0" inputmode="numeric" oninput="calculate()">
+                <div class="subtotal" id="sub2">0 mL</div>
+            </div>
+        </div>
+
+        <div class="modality-row">
+            <div class="modality-info">
+                <div class="modality-name">Conjugué Agdia</div>
+                <div class="modality-vol">350 mL / unité</div>
+            </div>
+            <div class="modality-input-container">
+                <input type="number" id="mod3" min="0" value="0" inputmode="numeric" oninput="calculate()">
+                <div class="subtotal" id="sub3">0 mL</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ajouts Personnalisés -->
+    <div class="card">
+        <h2>Ajouts Libres (Optionnel)</h2>
+        <div id="custom-container"></div>
+        <button class="btn-secondary" onclick="addCustomRow()">+ Ajouter un volume libre</button>
+    </div>
+
+    <!-- Résultats -->
+    <div class="results-card">
+        <h2>Volume Total Global</h2>
+        <div class="main-total" id="grand-total">0.00 L</div>
+        <div class="details-breakdown" id="breakdown-text">Modalités : 0 mL | Libres : 0 mL</div>
+        
+        <div class="units-grid">
+            <div class="unit-box">
+                <div>Millilitres</div>
+                <div id="res-ml">0 mL</div>
+            </div>
+            <div class="unit-box">
+                <div>Centilitres</div>
+                <div id="res-cl">0 cL</div>
+            </div>
+            <div class="unit-box">
+                <div>Litres</div>
+                <div id="res-l">0 L</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-primary" onclick="resetAll()" style="margin-top: 16px; background-color: #ef4444;">Réinitialiser</button>
+
+    <script>
+        const volumesModalities = [150, 175, 300, 350];
+
+        function addCustomRow() {
+            const container = document.getElementById('custom-container');
+            const row = document.createElement('div');
+            row.className = 'custom-row';
+            row.innerHTML = `
+                <input type="number" placeholder="Valeur" min="0" step="any" inputmode="decimal" oninput="calculate()">
+                <select onchange="calculate()">
+                    <option value="1">mL</option>
+                    <option value="10">cL</option>
+                    <option value="100">dL</option>
+                    <option value="1000" selected>Litres (L)</option>
+                </select>
+                <button class="btn-danger" onclick="this.parentElement.remove(); calculate();">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function calculate() {
+            let totalMlModalities = 0;
+            
+            for (let i = 0; i < 4; i++) {
+                const count = parseFloat(document.getElementById(`mod${i}`).value) || 0;
+                const sub = count * volumesModalities[i];
+                totalMlModalities += sub;
+                document.getElementById(`sub${i}`).innerText = sub + " mL";
+            }
+
+            let totalMlCustom = 0;
+            const rows = document.querySelectorAll('#custom-container .custom-row');
+            rows.forEach(row => {
+                const val = parseFloat(row.querySelector('input').value) || 0;
+                const mult = parseFloat(row.querySelector('select').value) || 1;
+                totalMlCustom += val * mult;
+            });
+
+            const grandTotalMl = totalMlModalities + totalMlCustom;
+            const grandTotalL = grandTotalMl / 1000;
+            const grandTotalCl = grandTotalMl / 10;
+
+            if (grandTotalL >= 1) {
+                document.getElementById('grand-total').innerText = grandTotalL.toFixed(3) + " L";
+            } else {
+                document.getElementById('grand-total').innerText = grandTotalMl.toFixed(1) + " mL";
+            }
+
+            document.getElementById('breakdown-text').innerText = `Modalités : ${totalMlModalities} mL | Libres : ${totalMlCustom} mL`;
+
+            document.getElementById('res-ml').innerText = grandTotalMl.toFixed(1) + " mL";
+            document.getElementById('res-cl').innerText = grandTotalCl.toFixed(1) + " cL";
+            document.getElementById('res-l').innerText = grandTotalL.toFixed(3) + " L";
+        }
+
+        function resetAll() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`mod${i}`).value = 0;
+            }
+            document.getElementById('custom-container').innerHTML = '';
+            calculate();
+        }
+    </script>
+</body>
+</html>
